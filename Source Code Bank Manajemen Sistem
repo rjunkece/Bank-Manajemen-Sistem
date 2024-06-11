@@ -1,1 +1,105 @@
+//Arjuna Sihombing (line 1-110)
 
+//Meyta Zaskiya (line 111-211)
+    cout << "\033[1;33m9. Kembali\033[0m" << endl;
+    int choice;
+    cin >> choice;
+}
+
+void riwayatTransaksi(const string& username) {
+    clearScreen();
+    cout << "\033[1;34mRiwayat Transaksi (" << username << ")\033[0m" << endl;
+    cout << "\033[1;36m==============================================\033[0m" << endl;
+    bool found = false;
+    for (const auto& user : database) {
+        if (user.username == username) {
+            if (user.riwayatTransaksi.empty()) {
+                cout << "\033[1;31mTidak Ada Transaksi Baru Baru Ini\033[0m" << endl;
+            } else {
+                for (const auto& transaksi : user.riwayatTransaksi) {
+                    cout << transaksi << endl;
+                    cout << "\033[1;36m==============================================\033[0m" << endl;
+                }
+            }
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        cout << "\033[1;31mTidak Ada Transaksi Baru Baru Ini\033[0m" << endl;
+    }
+    cout << "\033[1;33m9. Kembali\033[0m" << endl;
+    int choice;
+    cin >> choice;
+}
+
+// Helper function to convert numbers to words (Indonesian)
+string angkaToTerbilang(int angka) {
+    map<int, string> words = {
+        {0, "Nol"}, {1, "Satu"}, {2, "Dua"}, {3, "Tiga"}, {4, "Empat"}, {5, "Lima"},
+        {6, "Enam"}, {7, "Tujuh"}, {8, "Delapan"}, {9, "Sembilan"}, {10, "Sepuluh"},
+        {11, "Sebelas"}, {12, "Dua Belas"}, {13, "Tiga Belas"}, {14, "Empat Belas"},
+        {15, "Lima Belas"}, {16, "Enam Belas"}, {17, "Tujuh Belas"}, {18, "Delapan Belas"},
+        {19, "Sembilan Belas"}, {20, "Dua Puluh"}, {30, "Tiga Puluh"}, {40, "Empat Puluh"},
+        {50, "Lima Puluh"}, {60, "Enam Puluh"}, {70, "Tujuh Puluh"}, {80, "Delapan Puluh"},
+        {90, "Sembilan Puluh"}, {100, "Seratus"}, {200, "Dua Ratus"}, {300, "Tiga Ratus"},
+        {400, "Empat Ratus"}, {500, "Lima Ratus"}, {600, "Enam Ratus"}, {700, "Tujuh Ratus"},
+        {800, "Delapan Ratus"}, {900, "Sembilan Ratus"}, {1000, "Seribu"}, {10000, "Sepuluh Ribu"},
+        {100000, "Seratus Ribu"}, {1000000, "Satu Juta"}
+    };
+
+    if (angka < 20) return words[angka];
+    if (angka < 100) return words[angka - angka % 10] + (angka % 10 ? " " + words[angka % 10] : "");
+    if (angka < 1000) return words[angka / 100 * 100] + (angka % 100 ? " " + angkaToTerbilang(angka % 100) : "");
+    if (angka < 1000000) return angkaToTerbilang(angka / 1000) + " Ribu" + (angka % 1000 ? " " + angkaToTerbilang(angka % 1000) : "");
+    return to_string(angka);
+}
+
+void transfer(const string& username) {
+    clearScreen();
+    cout << "\033[1;34mSilahkan Pilih Bank Tujuan Anda\033[0m" << endl;
+    cout << "1. BRI" << endl;
+    cout << "2. BNI" << endl;
+    cout << "3. BCA" << endl;
+    cout << "4. MANDIRI" << endl;
+    int bankChoice;
+    cin >> bankChoice;
+
+    if (bankChoice < 1 || bankChoice > 4) {
+        clearScreen();
+        cout << "\033[1;31mFitur tidak ada\033[0m" << endl;
+        cout << "\033[1;33m9. Kembali\033[0m" << endl;
+        int choice;
+        cin >> choice;
+        return;
+    }
+
+    string noRek;
+    double nominal;
+    clearScreen();
+    cout << "\033[1;34mMasukkan Nomor Rekening yang Anda Tuju dan Nominalnya\033[0m" << endl;
+    cout << "No. rek : ";
+    cin >> noRek;
+    cout << "Nominal : Rp.";
+    cin >> nominal;
+    cout << fixed << setprecision(0) << nominal << ",00" << endl;
+
+    string password;
+    cout << "\033[1;34mKonfirmasi Pembayaran\033[0m" << endl;
+    cout << "No. rek : " << noRek << endl;
+    cout << "Nominal: Rp." << fixed << setprecision(0) << nominal << ",00" << endl;
+    cout << "Sebutan: " << angkaToTerbilang(static_cast<int>(nominal)) << " Rupiah" << endl;
+    cout << "Masukkan password: ";
+    cin >> password;
+
+    for (auto& user : database) {
+        if (user.username == username) {
+            if (password == user.password) {
+                if (user.saldo >= nominal) {
+                    user.saldo -= nominal;
+                    stringstream ss;
+                    ss << "Transfer ke " << noRek << " sebesar Rp." << fixed << setprecision(0) << nominal << ",00";
+                    user.riwayatTransaksi.push_back(ss.str());
+                    saveDatabase();
+                    clearScreen();
+//Fitria Nuraini (212-311)
