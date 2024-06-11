@@ -1,1 +1,101 @@
 
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <sstream>
+#include <fstream>
+#include <map>
+
+using namespace std;
+
+struct User {
+    string username;
+    string password;
+    double saldo;
+    vector<string> riwayatTransaksi;
+};
+
+vector<User> database;
+
+void clearScreen() {
+    cout << "\033[2J\033[1;1H";
+}
+
+void loadDatabase() {
+    ifstream file("database.txt");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            User user;
+            istringstream iss(line);
+            iss >> user.username >> user.password >> user.saldo;
+            database.push_back(user);
+        }
+        file.close();
+    }
+}
+
+void saveDatabase() {
+    ofstream file("database.txt");
+    if (file.is_open()) {
+        for (const auto& user : database) {
+            file << user.username << " " << user.password << " " << user.saldo << endl;
+        }
+        file.close();
+    }
+}
+
+bool signUp() {
+    clearScreen();
+    string username, password;
+    cout << "\033[1;34m=== SIGN UP ===\033[0m" << endl;
+    cout << "Buat Username : ";
+    cin >> username;
+    cout << "Buat Password : ";
+    cin >> password;
+
+    for (const auto& user : database) {
+        if (user.username == username) {
+            cout << "\033[1;31mUsername already exists!\033[0m" << endl;
+            return false;
+        }
+    }
+
+    User newUser = {username, password, 2000000.0, {}}; // Set initial saldo to 2,000,000
+    database.push_back(newUser);
+    saveDatabase();
+    cout << "\033[1;32mAkun berhasil dibuat!\033[0m" << endl;
+    return true;
+}
+
+bool login(string& loggedInUser) {
+    clearScreen();
+    string username, password;
+    cout << "\033[1;34m=== LOGIN ===\033[0m" << endl;
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    for (const auto& user : database) {
+        if (user.username == username && user.password == password) {
+            loggedInUser = username;
+            cout << "\033[1;32mBerhasil masuk ke akun anda\033[0m" << endl;
+            return true;
+        }
+    }
+    cout << "\033[1;31mAkun tidak ditemukan atau username/password tidak cocok\033[0m" << endl;
+    return false;
+}
+
+void displayMainMenu() {
+    clearScreen();
+    cout << "\033[1;36m==============================================\033[0m" << endl;
+    cout << "\033[1;36m||        Selamat Datang Di Sistem          ||\033[0m" << endl;
+    cout << "\033[1;36m||           Bank Kelompok 2                ||\033[0m" << endl;
+    cout << "\033[1;36m==============================================\033[0m" << endl;
+    cout << "\033[1;33m1. Manajemen Akun\033[0m" << endl;
+    cout << "\033[1;33m2. Transfer\033[0m" << endl;
+    cout << "\033[1;33m9. Keluar\033[0m" << endl;
+}
