@@ -102,4 +102,105 @@ void transfer(const string& username) {
                     user.riwayatTransaksi.push_back(ss.str());
                     saveDatabase();
                     clearScreen();
+
 //Fitria Nuraini (212-311)
+cout << "\033[1;32mTransaksi Berhasil\033[0m" << endl;
+                    cout << "Rekening Tujuan: " << noRek << endl;
+                    cout << "Nominal: Rp." << fixed << setprecision(0) << nominal << ",00" << endl;
+                    cout << "Sebutan: " << angkaToTerbilang(static_cast<int>(nominal)) << " Rupiah" << endl;
+                    cout << "\033[1;33m0. Kembali ke menu utama\033[0m" << endl;
+                    int choice;
+                    cin >> choice;
+                    return;
+                } else {
+                    clearScreen();
+                    cout << "\033[1;31mSaldo Anda Tidak Mencukupi Untuk Melakukan Transaksi Tersebut\033[0m" << endl;
+                    cout << "\033[1;33m9. Kembali\033[0m" << endl;
+                    int choice;
+                    cin >> choice;
+                    return;
+                }
+            }
+        }
+    }
+    cout << "\033[1;31mPassword Salah\033[0m" << endl;
+}
+
+void manageAccount(const string& username) {
+    clearScreen();
+    cout << "\033[1;34m1. Saldo Akun\033[0m" << endl;
+    cout << "\033[1;34m2. Riwayat Transaksi\033[0m" << endl;
+    cout << "\033[1;34m9. Kembali\033[0m" << endl;
+
+    int choice;
+    cin >> choice;
+    switch (choice) {
+        case 1:
+            checkSaldo(username);
+            break;
+        case 2:
+            riwayatTransaksi(username);
+            break;
+        case 9:
+            return;
+        default:
+            clearScreen();
+            cout << "\033[1;31mFitur tidak ada\033[0m" << endl;
+            cout << "\033[1;33m9. Kembali\033[0m" << endl;
+            cin >> choice;
+            break;
+    }
+}
+
+int main() {
+    loadDatabase();
+    int choice;
+    string loggedInUser;
+    do {
+        clearScreen();
+        cout << "\033[1;36m==============================================\033[0m" << endl;
+        cout << "\033[1;36m||        Selamat Datang Di Sistem          ||\033[0m" << endl;
+        cout << "\033[1;36m||           Bank Kelompok 2                ||\033[0m" << endl;
+        cout << "\033[1;36m==============================================\033[0m" << endl;
+        cout << "\033[1;33m1. Sign Up\033[0m" << endl;
+        cout << "\033[1;33m2. Login\033[0m" << endl;
+        cout << "\033[1;33m9. Exit\033[0m" << endl;
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                if (signUp()) {
+                    cout << "\033[1;33m7. Lanjutkan\033[0m" << endl;
+                    int next;
+                    cin >> next;
+                }
+                break;
+            case 2:
+                if (login(loggedInUser)) {
+                    do {
+                        displayMainMenu();
+                        cin >> choice;
+                        switch (choice) {
+                            case 1:
+                                manageAccount(loggedInUser);
+                                break;
+                            case 2:
+                                transfer(loggedInUser);
+                                break;
+                            case 9:
+                                loggedInUser.clear();
+                                break;
+                            default:
+                                clearScreen();
+                                cout << "\033[1;31mFitur tidak ada\033[0m" << endl;
+                                cout << "\033[1;33m9. Kembali\033[0m" << endl;
+                                cin >> choice;
+                                break;
+                        }
+                    } while (!loggedInUser.empty());
+                }
+                break;
+        }
+    } while (choice != 9);
+
+    return 0;
+}
